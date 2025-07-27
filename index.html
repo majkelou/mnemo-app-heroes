@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>System Główny – Test z Oceną</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    #symbol { font-size: 24px; margin: 20px 0; }
+    #image { max-width: 300px; margin: 10px auto; display: block; }
+    button {
+      padding: 10px 20px; margin: 5px; font-size: 18px;
+      border-radius: 8px; border: none; background: #007bff; color: #fff; cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    #timer, #stats { margin-top: 10px; font-size: 18px; }
+  </style>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <meta name="theme-color" content="#007bff">
+</head>
+<body>
+
+<h1>System Główny – Test Pamięci</h1>
+
+<div id="symbol">Kliknij "Test" aby zacząć</div>
+<img id="image" src="" alt="Obrazek symbolu" style="display:none;">
+
+<div>
+  <button id="testBtn">Test (1)</button>
+  <button id="knowBtn" style="display:none;">Wiem (2)</button>
+  <button id="dontKnowBtn" style="display:none;">Nie wiem (3)</button>
+  <button id="stopBtn" style="display:none;">Stop (4)</button>
+</div>
+
+<div id="timer"></div>
+<div id="stats"></div>
+
+<script>
+  const symbols = {
+    1: { name: "Zamek ludzi", img: "images/1.png" },
+    2: { name: "Leśny", img: "images/2.png" },
+    3: { name: "Zimowy", img: "images/3.png" },
+    4: { name: "Piekło / Inferno", img: "images/4.png" },
+    5: { name: "Nekro / Nieumarli", img: "images/5.png" },
+    6: { name: "Loch / Dungeon", img: "images/6.png" },
+    7: { name: "Skały / Góry / Horda", img: "images/7.png" },
+    8: { name: "Bagno", img: "images/8.png" },
+    9: { name: "Wrota /Conflux", img: "images/9.png" },
+    10: { name: "Kolos z Rodos", img: "images/10.png" },
+    11: { name: "Pikinier", img: "images/11.png" },
+    12: { name: "Kusznik", img: "images/12.png" },
+    13: { name: "Gryf", img: "images/13.png" },
+    14: { name: "Miecznik / Zbrojny", img: "images/14.png" },
+    15: { name: "Mnich", img: "images/15.png" },
+    16: { name: "Czempion / Kawalerzysta", img: "images/16.png" },
+    17: { name: "Angel / Anioł", img: "images/17.png" },
+    18: { name: "Lord Haart - przekupny", img: "images/18.png" },
+    19: { name: "Adela - kleryczka", img: "images/19.png" },
+    20: { name: "Totem leśny", img: "images/20.png" },
+    21: { name: "Centaur", img: "images/21.png" },
+    22: { name: "Krasnolud", img: "images/22.png" },
+    23: { name: "Elf -strzelec / Sharpshooter", img: "images/23.png" },
+    24: { name: "Pegaz", img: "images/24.png" },
+    25: { name: "Drzewiec / Ent", img: "images/25.png" },
+    26: { name: "Jednorożec / Unicorn", img: "images/26.png" },
+    27: { name: "Zielony Smok / Złoty", img: "images/27.png" },
+    28: { name: "Kyrre / Zwiadowca", img: "images/28.png" },
+    29: { name: "Elleshar / Druid", img: "images/29.png" },
+    30: { name: "Balon ", img: "images/30.png" },
+    31: { name: "Gremlin", img: "images/31.png" },
+    32: { name: "Gargulec", img: "images/32.png" },
+    33: { name: "Golem", img: "images/33.png" },
+    34: { name: "Mag Zimowy / Arcymag", img: "images/34.png" },
+    35: { name: "Dżin", img: "images/35.png" },
+    36: { name: "Naga / Skorpena", img: "images/36.png" },
+    37: { name: "Tytan", img: "images/37.png" },
+    38: { name: "Nela - pancerna dżinka", img: "images/38.png" },
+    39: { name: "Solmyr", img: "images/39.png" },
+    40: { name: "Bożek Impów/ Bóstewko złote", img: "images/40.png" },
+    41: { name: "Chochlik", img: "images/41.png" },
+    42: { name: "Gog / Magog", img: "images/42.png" },
+    43: { name: "Pies / Cerber", img: "images/43.png" },
+    44: { name: "Demon / rogaty / Kozioł", img: "images/44.png" },
+    45: { name: "Czart z biczem", img: "images/45.png" },
+    46: { name: "Ifryt", img: "images/46.png" },
+    47: { name: "Devil z kosą", img: "images/47.png" },
+    48: { name: "Rashka - pan ifrytów", img: "images/48.png" },
+    49: { name: "Ayden - szaman / hellslave ", img: "images/49.png" },
+    50: { name: "Więzienie duszy / prison ", img: "images/50.png" },
+    51: { name: "Szkielet", img: "images/51.png" },
+    52: { name: "Zombie", img: "images/52.png" },
+    53: { name: "Zjawa", img: "images/53.png" },
+    54: { name: "Wampir", img: "images/54.png" },
+    55: { name: "Lisz", img: "images/55.png" },
+    56: { name: "Black Knight, Czarny rycerz", img: "images/56.png" },
+    57: { name: "Kościany Smok", img: "images/57.png" },
+    58: { name: "Isra - więcej szkieletów", img: "images/58.png" },
+    59: { name: "Vidomina - czarna magia ", img: "images/59.png" },
+    60: { name: "Strażnik Złota", img: "images/60.png" },
+    61: { name: "Dzidowiec / Troglo", img: "images/61.png" },
+    62: { name: "Harpia", img: "images/62.png" },
+    63: { name: "Oko - beholder", img: "images/63.png" },
+    64: { name: "Meduza - zamienia w kamień", img: "images/64.png" },
+    65: { name: "Minotaur - taki byk z toporem / BYK", img: "images/65.png" },
+    66: { name: "Mantikora", img: "images/66.png" },
+    67: { name: "Czerwony Smok", img: "images/67.png" },
+    68: { name: "Gunnar - logistyk", img: "images/68.png" },
+    69: { name: "Deemer - deszcz meteorytów", img: "images/69.png" },
+    70: { name: "Proporzec orków / hordy", img: "images/70.png" },
+    71: { name: "Goblin", img: "images/71.png" },
+    72: { name: "Wilk / wilczy jeździec", img: "images/72.png" },
+    73: { name: "Ork - toporki", img: "images/73.png" },
+    74: { name: "Ogr - maczuga / szaman", img: "images/74.png" },
+    75: { name: "Rok - ptak gromu", img: "images/75.png" },
+    76: { name: "Cyklop", img: "images/76.png" },
+    77: { name: "Behemot / bestia z pazurami", img: "images/77.png" },
+    78: { name: "Crag Hack - offense", img: "images/78.png" },
+    79: { name: "Gundulla - orczyca mag bitewny", img: "images/79.png" },
+    80: { name: "Roślina mięsożerna", img: "images/80.png" },
+    81: { name: "Gnoll / hiena z kiścieniem", img: "images/81.png" },
+    82: { name: "Jaszcuroczłek", img: "images/82.png" },
+    83: { name: "Ważka", img: "images/83.png" },
+    84: { name: "Bazyliszek - jaszczur", img: "images/84.png" },
+    85: { name: "Gorgona / KROWA", img: "images/85.png" },
+    86: { name: "Wiwerna", img: "images/86.png" },
+    87: { name: "Hydra", img: "images/87.png" },
+    88: { name: "Tazar - defence / tygrys", img: "images/88.png" },
+    89: { name: "Andra - wiedźma", img: "images/89.png" },
+    90: { name: "Tęcza / zorza polarna", img: "images/90.png" },
+    91: { name: "Nimfa", img: "images/91.png" },
+    92: { name: "Burzak", img: "images/92.png" },
+    93: { name: "Wodniak", img: "images/93.png" },
+    94: { name: "Ogniak", img: "images/94.png" },
+    95: { name: "Ziemiak", img: "images/95.png" },
+    96: { name: "Umysł (żywiołak umysłu/magii)", img: "images/96.png" },
+    97: { name: "Feniks", img: "images/97.png" },
+    98: { name: "Pasis - spec od um. ale ma balistę", img: "images/98.png" },
+    99: { name: "Luna - Fire wall", img: "images/99.png" }
+
+
+  };
+
+  let current = 0, timerInterval = null, startTime = null;
+  let totalAttempts = 0, correctAnswers = 0, totalTime = 0;
+
+  document.getElementById('testBtn').addEventListener('click', startTest);
+  document.getElementById('knowBtn').addEventListener('click', know);
+  document.getElementById('dontKnowBtn').addEventListener('click', dontKnow);
+  document.getElementById('stopBtn').addEventListener('click', stopSession);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '1') startTest();
+    if (e.key === '2') know();
+    if (e.key === '3') dontKnow();
+    if (e.key === '4') stopSession();
+  });
+
+  function startTest() {
+    stopTimer();  // <-- poprawka — zakończ stary czas
+    const keys = Object.keys(symbols).map(Number);
+    current = keys[Math.floor(Math.random() * keys.length)];
+    document.getElementById('symbol').textContent = `${current}`;
+    document.getElementById('image').style.display = 'none';
+    document.getElementById('knowBtn').style.display = 'inline-block';
+    document.getElementById('dontKnowBtn').style.display = 'inline-block';
+    document.getElementById('stopBtn').style.display = 'inline-block';
+    startTimer();
+  }
+
+  function know() {
+    stopTimer();
+    correctAnswers++;
+    totalAttempts++;
+    showResult('✅');
+  }
+
+  function dontKnow() {
+    stopTimer();
+    totalAttempts++; 
+    showResult('❌');
+  }
+
+  function showResult(mark) {
+    document.getElementById('symbol').textContent = `${current}: ${symbols[current].name} ${mark}`;
+    document.getElementById('image').src = symbols[current].img;
+    document.getElementById('image').style.display = 'block';
+    updateStats();
+  }
+
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      document.getElementById('timer').textContent = `Czas: ${elapsed}s`;
+    }, 100);
+  }
+
+  function stopTimer(option) {
+    if (!startTime) return;
+    const elapsed = (Date.now() - startTime) / 1000;
+    if (option === 'add') {
+      totalTime += elapsed;
+    }
+    clearInterval(timerInterval);
+    document.getElementById('timer').textContent = `Czas: ${elapsed.toFixed(1)}s`;
+    startTime = null;
+    timerInterval = null;
+  }
+
+  function updateStats() {
+    const avgTime = totalAttempts ? (totalTime / totalAttempts).toFixed(1) : 0;
+    const percent = totalAttempts ? ((correctAnswers / totalAttempts) * 100).toFixed(0) : 0;
+    document.getElementById('stats').innerHTML = `
+      Próby: ${totalAttempts} | Poprawne: ${correctAnswers} (${percent}%) | Śr. czas: ${avgTime}s
+    `;
+  }
+
+  function stopSession() {
+    stopTimer();
+    document.getElementById('symbol').textContent = 'Test zatrzymany.';
+    document.getElementById('image').style.display = 'none';
+    document.getElementById('knowBtn').style.display = 'none';
+    document.getElementById('dontKnowBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'none';
+  }
+  if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('✅ Service Worker zarejestrowany!'))
+    .catch(err => console.error('❌ Błąd SW:', err));
+  }
+
+</script>
+
+</body>
+</html>
